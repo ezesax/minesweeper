@@ -2,6 +2,13 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API\GameController;
+use App\Http\Controllers\API\GameUserController;
+use App\Http\Controllers\API\GridController;
+use App\Http\Controllers\API\GuestUserController;
+use App\Http\Controllers\API\SessionController;
+use App\Http\Controllers\API\SessionLogController;
+use App\Http\Controllers\API\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +21,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+/** API RESOURCES ROUTES**/
+
+    Route::resource('user', UserController::class);
+    Route::resource('user/guest', GuestUserController::class);
+    Route::resource('session', SessionController::class);
+    Route::resource('session/log', SessionLogController::class);
+    Route::resource('game/user', GameUserController::class);
+    Route::resource('game', GameController::class);
+    Route::resource('grid', GridController::class);
