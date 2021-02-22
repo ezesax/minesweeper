@@ -28,7 +28,7 @@ class GameRequest extends FormRequest
             'rows'      =>  'required|integer',
             'columns'   =>  'required|integer',
             'mines'     =>  'required|integer',
-            'status'    =>  'required|in:OPEN,CLOSE,NONSTARTED'
+            'status'    =>  'required|in:OPEN,CLOSE,NONSTARTED,WIN'
         ];
     }
 }

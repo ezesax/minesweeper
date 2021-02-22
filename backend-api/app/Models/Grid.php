@@ -14,6 +14,7 @@ class Grid extends Model
         'x_cord',
         'y_cord',
         'mine',
+        'mines_around',
         'mark',
         'game_id'
     ];
