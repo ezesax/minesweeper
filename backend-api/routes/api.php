@@ -30,3 +30,5 @@ use App\Http\Controllers\API\UserController;
     Route::resource('game/user', GameUserController::class);
     Route::resource('game', GameController::class);
     Route::resource('grid', GridController::class);
+
+/** **/

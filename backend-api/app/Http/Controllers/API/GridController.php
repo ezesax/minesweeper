@@ -4,6 +4,10 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\GridRequest;
+use App\Models\Grid;
+use App\Http\Resources\GridResource;
 
 class GridController extends Controller
 {
@@ -12,52 +16,22 @@ class GridController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($gameId)
     {
-        //
-    }
+        try{
+            $grid = GridResource::collection(
+                Grid::where('game_id', $gameId)->get()
+            );
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+            return response()->json([
+                'data' => $grid,
+                'message' => 'Grid retrieved successfully'
+            ], 200);
+        }catch(\Exception $e){
+            return response()->json([
+                'message' => 'Internal server error'
+            ], 500);
+        }
     }
 
     /**
@@ -67,19 +41,21 @@ class GridController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(GridRequest $request, $id)
     {
-        //
-    }
+        try{
+            $data = $request->validated();
+            $item = Grid::findOrFail($id);
+            $item->update($data);
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+            return response()->json([
+                'data' => new GridResource($item),
+                'message' => 'Grid updated successfully'
+            ], 201);
+        }catch(\Exception $e){
+            return response()->json([
+                'message' => 'Internal server error'
+            ], 500);
+        }
     }
 }
