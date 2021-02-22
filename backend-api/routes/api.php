@@ -9,6 +9,11 @@ use App\Http\Controllers\API\GuestUserController;
 use App\Http\Controllers\API\SessionController;
 use App\Http\Controllers\API\SessionLogController;
 use App\Http\Controllers\API\UserController;
+use App\Http\Controllers\API\AuthController;
+
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Headers: *');
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS, HEAD');
 
 /*
 |--------------------------------------------------------------------------
@@ -20,12 +25,32 @@ use App\Http\Controllers\API\UserController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+Route::group([
+    'prefix' => 'auth'
+], function ($router) {
+    /** AUTH ROUTES**/
+    Route::post('login', [AuthController::class, 'login']);
+});
 
-/** API RESOURCES ROUTES**/
+    Route::group([
+        'middleware' => 'check.JWT',
+        'prefix' => 'auth'
+    ], function ($router) {
+        /** AUTH ROUTES**/
+        Route::post('logout', [AuthController::class, 'logout']);
+        Route::post('refresh', [AuthController::class, 'refresh']);
+        Route::get('me', [AuthController::class, 'me']);
+    });
 
-    Route::resource('user', UserController::class);
-    Route::resource('session/log', SessionLogController::class);
-    Route::resource('game', GameController::class);
-    Route::resource('grid', GridController::class);
+    Route::group([
+        'middleware' => 'check.JWT',
+        'prefix' => 'resources'
+    ], function ($router) {
+        /** API RESOURCES ROUTES**/
+        Route::resource('user', UserController::class);
+        Route::resource('session/log', SessionLogController::class);
+        Route::resource('game', GameController::class);
+        Route::resource('grid', GridController::class);
+    });
 
 /** **/
