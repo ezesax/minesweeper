@@ -46,6 +46,7 @@ class UserController extends Controller
         try{
             $data = $request->validated();
             $item = new User($data);
+            $item->password = bcrypt($item->password);
             $item->save();
 
             return response()->json([
