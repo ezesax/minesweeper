@@ -15,8 +15,8 @@ class CreateSessionLogsTable extends Migration
     {
         Schema::create('session_logs', function (Blueprint $table) {
             $table->id();
-            $table->string('user_type');
             $table->bigInteger('user_id')->unsigned();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->date('start');
             $table->date('end');
             $table->timestamps();

@@ -11,7 +11,7 @@ class Session extends Model
 
     protected $fillable = [
         'id',
-        'user_type',
-        'user_id'
+        'user_id',
+        'token'
     ];
 }

@@ -11,7 +11,6 @@ class SessionLog extends Model
 
     protected $fillable = [
         'id',
-        'user_type',
         'user_id',
         'start',
         'end'
