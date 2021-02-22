@@ -17,4 +17,9 @@ class User extends Authenticatable
         'email',
         'password'
     ];
+
+    public function games()
+    {
+        return $this->hasMany(Game::class);
+    }
 }
