@@ -4,6 +4,11 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\UserCreateRequest;
+use App\Http\Requests\UserUpdateRequest;
+use App\Models\User;
+use App\Http\Resources\UserResource;
 
 class UserController extends Controller
 {
@@ -14,17 +19,20 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
-    }
+        try{
+            $users = UserResource::collection(
+                User::all()
+            );
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+            return response()->json([
+                'data' => $users,
+                'message' => 'Users retrieved successfully'
+            ], 200);
+        }catch(\Exception $e){
+            return response()->json([
+                'message' => 'Internal server error'
+            ], 500);
+        }
     }
 
     /**
@@ -33,9 +41,22 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(UserCreateRequest $request)
     {
-        //
+        try{
+            $data = $request->validated();
+            $item = new User($data);
+            $item->save();
+
+            return response()->json([
+                'data' => new UserResource($item),
+                'message' => 'User created successfully'
+            ], 201);
+        }catch(\Exception $e){
+            return response()->json([
+                'message' => 'Internal server error'
+            ], 500);
+        }
     }
 
     /**
@@ -46,18 +67,18 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        //
-    }
+        try{
+            $item = User::findOrFail($id);
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+            return response()->json([
+                'data' => new UserResource($item),
+                'message' => 'User retrieved successfully'
+            ], 200);
+        }catch(\Exception $e){
+            return response()->json([
+                'message' => 'Internal server error'
+            ], 500);
+        }
     }
 
     /**
@@ -67,9 +88,22 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UserUpdateRequest $request, $id)
     {
-        //
+        try{
+            $data = $request->validated();
+            $item = User::findOrFail($id);
+            $item->update($data);
+
+            return response()->json([
+                'data' => new UserResource($item),
+                'message' => 'User updated successfully'
+            ], 201);
+        }catch(\Exception $e){
+            return response()->json([
+                'message' => 'Internal server error'
+            ], 500);
+        }
     }
 
     /**
@@ -80,6 +114,17 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try{
+            $item = User::findOrFail($id);
+            $item->delete();
+
+            return response()->json([
+                'message' => 'User deleted successfully'
+            ], 204);
+        }catch(\Exception $e){
+            return response()->json([
+                'message' => 'Internal server error'
+            ], 500);
+        }
     }
 }
