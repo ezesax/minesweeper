@@ -22,4 +22,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Game::class);
     }
+
+    public function sessionLog()
+    {
+        return $this->hasMany(SessionLog::class);
+    }
 }

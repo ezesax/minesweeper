@@ -14,4 +14,9 @@ class Session extends Model
         'user_id',
         'token'
     ];
+
+    public function user()
+    {
+        return $this->hasOne(User::class);
+    }
 }

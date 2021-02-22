@@ -24,4 +24,9 @@ class Game extends Model
     {
         return $this->hasMany(Grid::class);
     }
+
+    public function user()
+    {
+        return $this->hasOne(User::class);
+    }
 }
