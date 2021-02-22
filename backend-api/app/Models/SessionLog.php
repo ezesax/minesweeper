@@ -15,4 +15,9 @@ class SessionLog extends Model
         'start',
         'end'
     ];
+
+    public function user()
+    {
+        return $this->hasOne(User::class);
+    }
 }

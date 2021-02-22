@@ -17,4 +17,9 @@ class Grid extends Model
         'mark',
         'game_id'
     ];
+
+    public function game()
+    {
+        return $this->hasOne(Game::class);
+    }
 }
