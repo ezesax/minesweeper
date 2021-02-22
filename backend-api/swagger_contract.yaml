@@ -1,0 +1,437 @@
+swagger: "2.0"
+info:
+  description: "This is the API documentation of a deviget challenge: Minesweeper"
+  version: "1.0.0"
+  title: "Minesweeper"
+  termsOfService: ""
+  contact:
+    email: "ezequieldavidromano@hotmail.com"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "localhost"
+basePath: "/api"
+tags:
+- name: "auth" 
+  description: "Access and user login"
+- name: "game"
+  description: "Access to user's games"
+- name: "grid"
+  description: "Access to game's grid"
+- name: "session log"
+  description: "Access to user's session log"
+- name: "user"
+  description: "Access to user"
+  externalDocs:
+    description: "Find out more about our store"
+    url: "http://swagger.io"
+schemes:
+- "https"
+- "http"
+paths:
+  /resources/game:
+    post:
+      tags:
+      - "game"
+      summary: "Add a new game"
+      description: ""
+      operationId: "addGame"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"  
+        name: "body"
+        description: "Game object that needs to be added"
+        required: true
+        schema:
+          $ref: "#/definitions/Game"
+      responses:
+        "500":
+          description: "Internal server error"
+        "201":
+          description: "Game created successfully"
+    get:
+      tags:
+      - "game"
+      summary: "List all user's games"
+      description: ""
+      operationId: "listGame"
+      produces:
+      - "application/json"
+      responses:
+        "500":
+          description: "Internal server error"
+        "200":
+          description: "Games retrieved successfully"
+  /resources/game/gameId:
+    get:
+      tags:
+      - "game"
+      summary: "Get a single game by id"
+      description: ""
+      operationId: "getGame"
+      produces:
+      - "application/json"
+      responses:
+        "500":
+          description: "Internal server error"
+        "200":
+          description: "Game retrieved successfully"
+    put:
+      tags:
+      - "game"
+      summary: "Update a game"
+      description: ""
+      operationId: "updateGame"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Game object that needs to be updated"
+        required: true
+        schema:
+          $ref: "#/definitions/Game"
+      responses:
+        "500":
+          description: "Internal server error"
+        "201":
+          description: "Game updated successfully"
+    delete:
+      tags:
+      - "game"
+      summary: "Delete a game by id"
+      description: ""
+      operationId: "deleteGame"
+      produces:
+      - "application/json"
+      responses:
+        "500":
+          description: "Internal server error"
+        "204":
+          description: "Game deleted successfully"
+  /resources/grid/gameId:
+    get:
+      tags:
+      - "grid"
+      summary: "Get all cells grid from game"
+      description: ""
+      operationId: "getGrid"
+      produces:
+      - "application/json"
+      responses:
+        "500":
+          description: "Internal server error"
+        "200":
+          description: "Grid retrieved successfully"
+  /resources/grid/gridId:
+    put:
+      tags:
+      - "grid"
+      summary: "Update a cell"
+      description: ""
+      operationId: "updateGrid"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Grid object that needs to be updated"
+        required: true
+        schema:
+          $ref: "#/definitions/Grid"
+      responses:
+        "500":
+          description: "Internal server error"
+        "201":
+          description: "Grid updated successfully"
+  /resources/session/log/userId:
+    get:
+      tags:
+      - "session log"
+      summary: "Get all user's session logs"
+      description: ""
+      operationId: "getSessionLog"
+      produces:
+      - "application/json"
+      responses:
+        "500":
+          description: "Internal server error"
+        "200":
+          description: "SessionLog retrieved successfully"
+  /resources/user:
+    post:
+      tags:
+      - "user"
+      summary: "Add a new user"
+      description: ""
+      operationId: "addUser"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"  
+        name: "body"
+        description: "User object that needs to be added"
+        required: true
+        schema:
+          $ref: "#/definitions/CreateUser"
+      responses:
+        "500":
+          description: "Internal server error"
+        "201":
+          description: "User created successfully"
+    get:
+      tags:
+      - "user"
+      summary: "List all users"
+      description: ""
+      operationId: "listUser"
+      produces:
+      - "application/json"
+      responses:
+        "500":
+          description: "Internal server error"
+        "200":
+          description: "Users retrieved successfully"
+  /resources/user/userId:
+    get:
+      tags:
+      - "user"
+      summary: "Get a single user by id"
+      description: ""
+      operationId: "getUser"
+      produces:
+      - "application/json"
+      responses:
+        "500":
+          description: "Internal server error"
+        "200":
+          description: "User retrieved successfully"
+    put:
+      tags:
+      - "user"
+      summary: "Update a user"
+      description: ""
+      operationId: "updateUser"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "User object that needs to be updated"
+        required: true
+        schema:
+          $ref: "#/definitions/UpdateUser"
+      responses:
+        "500":
+          description: "Internal server error"
+        "201":
+          description: "User updated successfully"
+    delete:
+      tags:
+      - "user"
+      summary: "Delete a user by id"
+      description: ""
+      operationId: "deleteUser"
+      produces:
+      - "application/json"
+      responses:
+        "500":
+          description: "Internal server error"
+        "204":
+          description: "User deleted successfully"
+  /auth/register:
+    post:
+      tags:
+      - "auth"
+      summary: "Register user in the api"
+      description: ""
+      operationId: "register"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"  
+        name: "body"
+        description: "Data object to log user"
+        required: true
+        schema:
+          $ref: "#/definitions/Register"
+      responses:
+        "201":
+          description: "Created"
+        "500":
+          description: "Internal server error"
+  /auth/login:
+    post:
+      tags:
+      - "auth"
+      summary: "Log user to the api"
+      description: ""
+      operationId: "login"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"  
+        name: "body"
+        description: "Data object to log user"
+        required: true
+        schema:
+          $ref: "#/definitions/Login"
+      responses:
+        "200":
+          description: "Ok"
+        "401":
+          description: "Unauthorized"
+        "400":
+          description: "Bad request"
+  /auth/logout:
+    post:
+      tags:
+      - "auth"
+      summary: "Logout user from the api"
+      description: ""
+      operationId: "logout"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "Ok"
+  /auth/refresh:
+    post:
+      tags:
+      - "auth"
+      summary: "Logout user from the api"
+      description: ""
+      operationId: "refresh"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "Ok"
+  /auth/me:
+    get:
+      tags:
+      - "auth"
+      summary: "Get current loged user data"
+      description: ""
+      operationId: "me"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "Ok"
+definitions:
+  Game:
+    type: "object"
+    required:
+    - "user_id"
+    - "rows"
+    - "columns"
+    - "mines"
+    - "status"
+    properties:
+      user_id:
+        type: "integer"
+        format: "int64"
+      rows:
+        type: "integer"
+        format: "int64"
+      columns:
+        type: "integer"
+        format: "int64"
+      mines:
+        type: "integer"
+        format: "int64"
+      status:
+        type: "string"
+        description: "game status"
+        enum:
+        - "NONSTARTED"
+        - "OPEN"
+        - "CLOSE"
+        - "WIN"
+  Grid:
+    type: "object"
+    required:
+    - "x_cord"
+    - "y_cord"
+    - "mine"
+    - "mark"
+    - "game_id"
+    properties:
+      x_cord:
+        type: "integer"
+        format: "int64"
+      y_cord:
+        type: "integer"
+        format: "int64"
+      mine:
+        type: "boolean"
+      mark:
+        type: "string"
+      game_id:
+        type: "integer"
+        format: "int64"
+  CreateUser:
+    type: "object"
+    required:
+    - "fullName"
+    - "email"
+    - "password"
+    properties:
+      fullName:
+        type: "string"
+      email:
+        type: "string"
+      password:
+        type: "string"
+  UpdateUser:
+    type: "object"
+    required:
+    - "fullname"
+    - "email"
+    properties:
+      fullname:
+        type: "string"
+      email:
+        type: "string"
+  Login:
+    type: "object"
+    required:
+    - "email"
+    - "password"
+    properties:
+      email:
+        type: "string"
+      password:
+        type: "string"
+  Register:
+    type: "object"
+    required:
+    - "email"
+    - "fullName"
+    - "password"
+    properties:
+      email:
+        type: "string"
+      fullName:
+        type: "string"
+      password:
+        type: "string"
+externalDocs:
+  description: "Find out more about Swagger"
+  url: "http://swagger.io"

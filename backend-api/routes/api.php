@@ -30,6 +30,7 @@ Route::group([
 ], function ($router) {
     /** AUTH ROUTES**/
     Route::post('login', [AuthController::class, 'login']);
+    Route::post('register', [UserController::class, 'store']);
 });
 
     Route::group([

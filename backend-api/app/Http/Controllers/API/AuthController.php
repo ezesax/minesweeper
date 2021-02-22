@@ -58,7 +58,7 @@ class AuthController extends Controller
      */
     public function me(): JsonResponse
     {
-        return response()->json(auth('api')->user());
+        return response()->json(auth('api')->user(), 200);
     }
     /**
      * Log the user out (Invalidate the token).
@@ -69,7 +69,7 @@ class AuthController extends Controller
     {
         auth('api')->logout();
 
-        return response()->json(['message' => 'Successfully logged out']);
+        return response()->json(['message' => 'Successfully logged out'], 200);
     }
     /**
      * Refresh a token.
@@ -93,6 +93,6 @@ class AuthController extends Controller
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth('api')->factory()->getTTL() * 60,
-        ]);
+        ], 200);
     }
 }
