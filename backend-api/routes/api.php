@@ -24,10 +24,7 @@ use App\Http\Controllers\API\UserController;
 /** API RESOURCES ROUTES**/
 
     Route::resource('user', UserController::class);
-    Route::resource('user/guest', GuestUserController::class);
-    Route::resource('session', SessionController::class);
     Route::resource('session/log', SessionLogController::class);
-    Route::resource('game/user', GameUserController::class);
     Route::resource('game', GameController::class);
     Route::resource('grid', GridController::class);
 

@@ -27,7 +27,7 @@ class GridRequest extends FormRequest
             'x_cord'  =>  'required|integer',
             'y_cord'  =>  'required|integer',
             'mine'    =>  'required|boolean',
-            'mark'    =>  'required|char',
+            'mark'    =>  'required|in:0,R,F,Q', //0=hidden, R=revealed, F=flag, Q=question mark
             'game_id' =>  'required|exists:games,id',
         ];
     }

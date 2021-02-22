@@ -49,6 +49,10 @@ class GameController extends Controller
         try{
             $data = $request->validated();
             $item = new Game($data);
+
+            $item->start_at = now();
+            $item->end_at = now();
+
             $item->save();
 
             $this->generateGrid($item->rows, $item->columns, $item->mines, $item->id);
@@ -134,29 +138,43 @@ class GameController extends Controller
     }
 
     private function generateGrid($rows, $columns, $mines, $gameId){
-        $currentMines = 0;
+        $minesMap = $this->setMines($rows, $columns, $mines);
 
         for($row = 0; $row < $rows; $row++){
             for($column = 0; $column < $columns; $column++){
                 $grid = new Grid();
-                $hasMine = $this->setMine($currentMines, $mines);
-                if($hasMine == 1)
-                    $currentMines++;
-
                 $grid->x_cord = $column;
                 $grid->y_cord = $row;
-                $grid->mine = $hasMine;
-                $grid->mark = 'NA';
+                $grid->mine = $minesMap[$row][$column];
+                $grid->mark = '0';
                 $grid->game_id = $gameId;
+
+                $grid->save();
             }
         }
     }
 
-    private function setMine($currentMines, $mines){
-        if($currentMines < $mines){
-            //TODO: LOGIC TO SET MINES
-        }else{
-            return 0;
+    private function setMines($rows, $columns, $mines){
+        $currentMines = 0;
+        $map = [];
+
+        for($row = 0; $row < $rows; $row++){
+            array_push($map, []);
+            for($column = 0; $column < $columns; $column++){
+                array_push($map[$row], 0);
+            }
         }
+
+        while($currentMines <= $mines){
+            $r = rand(0, (count($map)-1));
+            $c = rand(0, (count($map[0])-1));
+
+            if($map[$r][$c] == 0){
+                $map[$r][$c] = 1;
+                $currentMines++;
+            }
+        }
+
+        return $map;
     }
 }
