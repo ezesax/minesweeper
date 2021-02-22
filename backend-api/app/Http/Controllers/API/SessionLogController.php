@@ -16,11 +16,12 @@ class SessionLogController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index($userId)
+    public function index()
     {
         try{
+            $user = Auth::user();
             $sessionLog = SessionLogResource::collection(
-                SessionLog::where('user_id', $userId)->get()
+                SessionLog::where('user_id', $user->id)->get()
             );
 
             return response()->json([
