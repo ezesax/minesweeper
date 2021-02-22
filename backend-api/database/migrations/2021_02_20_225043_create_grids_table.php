@@ -18,6 +18,7 @@ class CreateGridsTable extends Migration
             $table->integer('x_cord');
             $table->integer('y_cord');
             $table->boolean('mine');
+            $table->integer('mines_around')->nullable();
             $table->char('mark');
             $table->bigInteger('game_id')->unsigned();
             $table->foreign('game_id')->references('id')->on('games')->onDelete('cascade');

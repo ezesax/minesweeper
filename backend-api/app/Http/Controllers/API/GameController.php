@@ -146,6 +146,7 @@ class GameController extends Controller
                 $grid->x_cord = $column;
                 $grid->y_cord = $row;
                 $grid->mine = $minesMap[$row][$column];
+                $grid->mines_around = $this->getMinesAround($minesMap, $row, $column);
                 $grid->mark = '0';
                 $grid->game_id = $gameId;
 
@@ -176,5 +177,23 @@ class GameController extends Controller
         }
 
         return $map;
+    }
+
+    private function getMinesAround($minesMap, $row, $column){
+        $around = $minesMap[$row][$column] == 1 ? -1 : 0;
+        $row -= 1;
+        $column -= 1;
+
+        for($i = 0; $i < 3; $i++){
+            for($j = 0; $j < 3; $j++){
+                if(isset($minesMap[$row+$i]) && isset($minesMap[$row+$i][$column+$j])){
+                    if($minesMap[$row+$i][$column+$j]){
+                        $around++;
+                    }
+                }
+            }
+        }
+
+        return $around;
     }
 }
