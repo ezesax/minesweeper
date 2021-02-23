@@ -55,7 +55,7 @@ class GameController extends Controller
 
             $item->save();
 
-            $this->generateGrid($item->rows, $item->columns, $item->mines, $item->id);
+            generateGrid($item->rows, $item->columns, $item->mines, $item->id);
 
             return response()->json([
                 'data' => new GameResource($item),
@@ -136,64 +136,8 @@ class GameController extends Controller
             ], 500);
         }
     }
+}
 
-    private function generateGrid($rows, $columns, $mines, $gameId){
-        $minesMap = $this->setMines($rows, $columns, $mines);
-
-        for($row = 0; $row < $rows; $row++){
-            for($column = 0; $column < $columns; $column++){
-                $grid = new Grid();
-                $grid->x_cord = $column;
-                $grid->y_cord = $row;
-                $grid->mine = $minesMap[$row][$column];
-                $grid->mines_around = $this->getMinesAround($minesMap, $row, $column);
-                $grid->mark = '0';
-                $grid->game_id = $gameId;
-
-                $grid->save();
-            }
-        }
-    }
-
-    private function setMines($rows, $columns, $mines){
-        $currentMines = 0;
-        $map = [];
-
-        for($row = 0; $row < $rows; $row++){
-            array_push($map, []);
-            for($column = 0; $column < $columns; $column++){
-                array_push($map[$row], 0);
-            }
-        }
-
-        while($currentMines < $mines){
-            $r = rand(0, (count($map)-1));
-            $c = rand(0, (count($map[0])-1));
-
-            if($map[$r][$c] == 0){
-                $map[$r][$c] = 1;
-                $currentMines++;
-            }
-        }
-
-        return $map;
-    }
-
-    private function getMinesAround($minesMap, $row, $column){
-        $around = $minesMap[$row][$column] == 1 ? -1 : 0;
-        $row -= 1;
-        $column -= 1;
-
-        for($i = 0; $i < 3; $i++){
-            for($j = 0; $j < 3; $j++){
-                if(isset($minesMap[$row+$i]) && isset($minesMap[$row+$i][$column+$j])){
-                    if($minesMap[$row+$i][$column+$j]){
-                        $around++;
-                    }
-                }
-            }
-        }
-
-        return $around;
-    }
+function handleAdjacentCells($gameId, $adjacentCells){
+    Grid::whereIn('id', $adjacentCells)->update(['mark' => 'R']);
 }
