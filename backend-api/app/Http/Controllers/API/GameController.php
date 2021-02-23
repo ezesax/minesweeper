@@ -166,7 +166,7 @@ class GameController extends Controller
             }
         }
 
-        while($currentMines <= $mines){
+        while($currentMines < $mines){
             $r = rand(0, (count($map)-1));
             $c = rand(0, (count($map[0])-1));
 

@@ -102,18 +102,50 @@ class GridController extends Controller
     }
 
     private function handleAdjacentCells($gameId, $cellRevealed){
-        $y = [$cellRevealed->y_cord-1, $cellRevealed->y_cord, $cellRevealed->y_cord+1];
-        $x = [$cellRevealed->x_cord-1, $cellRevealed->x_cord, $cellRevealed->x_cord+1];
+        $game = Game::find($gameId);
+        $leftCell = $cellRevealed->x_cord - 1 < 0 ? null : Grid::where('game_id', $gameId)
+                                                               ->where('x_cord', $cellRevealed->x_cord - 1)
+                                                               ->where('y_cord', $cellRevealed->y_cord)
+                                                               ->first();
+        $rightCell = $cellRevealed->x_cord + 1 > ($game->columns-1) ? null : Grid::where('game_id', $gameId)
+                                                                                ->where('x_cord', $cellRevealed->x_cord + 1)
+                                                                                ->where('y_cord', $cellRevealed->y_cord)
+                                                                                ->first();
+        $topCell = $cellRevealed->y_cord - 1 < 0 ? null : Grid::where('game_id', $gameId)
+                                                              ->where('x_cord', $cellRevealed->x_cord)
+                                                              ->where('y_cord', $cellRevealed->y_cord - 1)
+                                                              ->first();
+        $bottomCell = $cellRevealed->y_cord + 1 > ($game->rows-1) ? null : Grid::where('game_id', $gameId)
+                                                                                  ->where('x_cord', $cellRevealed->x_cord)
+                                                                                  ->where('y_cord', $cellRevealed->y_cord + 1)
+                                                                                  ->first();
+        if($leftCell != null){
+            if($leftCell->mine == 0){
+                $this->handleAdjacentCells($gameId, $leftCell);
+                $cell->mark = 'R';
+                $cell->save();
+            }
+        }
 
+        if($rightCell != null){
+            if($rightCell->mine == 0){
+                $this->handleAdjacentCells($gameId, $rightCell);
+                $cell->mark = 'R';
+                $cell->save();
+            }
+        }
 
-        $grid = Grid::where('game_id', $gameId)
-                    ->whereIn('y_cord', $y)
-                    ->whereIn('x_cord', $x)
-                    ->get();
+        if($topCell != null){
+            if($topCell->mine == 0){
+                $this->handleAdjacentCells($gameId, $topCell);
+                $cell->mark = 'R';
+                $cell->save();
+            }
+        }
 
-        foreach($cell as $grid){
-            if($cell->mine == 0){
-                $this->handleAdjacentCells($gameId, $cell);
+        if($bottomCell != null){
+            if($bottomCell->mine == 0){
+                $this->handleAdjacentCells($gameId, $bottomCell);
                 $cell->mark = 'R';
                 $cell->save();
             }
