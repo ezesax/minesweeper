@@ -1,6 +1,7 @@
 'use strict'
 
 var grid = [];
+var adjacentCells = [];
 
 $(document).ready(() => {
 
@@ -221,6 +222,9 @@ function updateGrid(cellId, mark){
 
     let url = '/api/resources/grid/'+cellId;
 
+    adjacentCells = [];
+    getAdjacentCells(cellId);
+
     axios.put(url, data)
     .then(response => {
         //{
@@ -333,4 +337,39 @@ function deleteUser(userId){
     .catch(function (error) {
         console.log(error);
     });
+}
+
+//** ADJACENT CELLS LOGIC **/adjacentCells grid
+    //    [
+    //        {
+    //            "id": 9,
+    //            "x_cord": 0,
+    //            "y_cord": 0,
+    //            "mine": 1,
+    //            "mines_around": 0,
+    //            "mark": "0"
+    //        },
+    //        ...
+    //    ]
+
+function getAdjacentCells(cellId){
+    let cell = grid.filter(e => {return e.id == cellId})[0];
+
+    if(cell.mine == 0){
+        adjacents = grid.filter(e => {
+            if(e.x_cord == cell.x_cord-1 && e.y_cord == cell.y_cord ||
+               e.x_cord == cell.x_cord+1 && e.y_cord == cell.y_cord ||
+               e.x_cord == cell.x_cord && e.y_cord == cell.y_cord-1 ||
+               e.x_cord == cell.x_cord && e.y_cord == cell.y_cord+1){
+                return e;
+            }
+        });
+
+        adjacents.forEach(e => {
+            if(e.mine == 0){
+                getAdjacentCells(e.id);
+                adjacentCells.push(e.id);
+            }
+        });
+    }
 }
