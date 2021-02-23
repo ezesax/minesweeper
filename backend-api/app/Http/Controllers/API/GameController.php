@@ -137,7 +137,3 @@ class GameController extends Controller
         }
     }
 }
-
-function handleAdjacentCells($gameId, $adjacentCells){
-    Grid::whereIn('id', $adjacentCells)->update(['mark' => 'R']);
-}
