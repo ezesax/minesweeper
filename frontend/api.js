@@ -339,18 +339,7 @@ function deleteUser(userId){
     });
 }
 
-//** ADJACENT CELLS LOGIC **/adjacentCells grid
-    //    [
-    //        {
-    //            "id": 9,
-    //            "x_cord": 0,
-    //            "y_cord": 0,
-    //            "mine": 1,
-    //            "mines_around": 0,
-    //            "mark": "0"
-    //        },
-    //        ...
-    //    ]
+//** ADJACENT CELLS LOGIC **//
 
 function getAdjacentCells(cellId){
     let cell = grid.filter(e => {return e.id == cellId})[0];
