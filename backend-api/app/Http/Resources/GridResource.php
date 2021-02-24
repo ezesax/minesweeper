@@ -21,6 +21,7 @@ class GridResource extends JsonResource
             'mine'          => $this->mine,
             'mines_around'  => $this->mines_around,
             'mark'          => $this->mark,
+            'hint'          => $this->hint,
             'game'          => new GameResource($this->whenLoaded('game'))
         ];
     }

@@ -20,8 +20,8 @@ class CreateGamesTable extends Migration
             $table->integer('rows');
             $table->integer('columns');
             $table->integer('mines');
-            $table->date('start_at')->nullable();
-            $table->date('end_at')->nullable();
+            $table->dateTime('start_at')->nullable();
+            $table->dateTime('end_at')->nullable();
             $table->string('status');
             $table->timestamps();
         });

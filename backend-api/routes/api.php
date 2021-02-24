@@ -51,7 +51,8 @@ Route::group([
         Route::resource('user', UserController::class);
         Route::resource('session/log', SessionLogController::class);
         Route::resource('game', GameController::class);
-        Route::resource('grid', GridController::class);
+        Route::get('grid/{gameId}', [GridController::class, 'index']);
+        Route::put('grid/{id}', [GridController::class, 'update'])->middleware('check.game.status');
     });
 
 /** **/
