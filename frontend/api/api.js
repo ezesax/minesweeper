@@ -2,6 +2,7 @@
 
 var basePath = 'http://localhost:8000';
 var grid = [];
+var currentGame;
 
 $(document).ready(() => {
 
@@ -22,22 +23,26 @@ function register(){
 }
 
 function login(){
+    $('#loginModal').modal('hide');
+    startLoading();
     let url = basePath+'/api/auth/login';
     let data = {email: $('#email').val(), password: $('#password').val()}
     axios.post(url, data)
     .then(response => {
         sessionStorage.setItem("token", response.data.access_token);
         checkUserLogin();
-        $('#loginModal').modal('hide');
+        stopLoading();
     })
     .catch(function (error) {
         console.log(error);
         sessionStorage.removeItem("user_id");
         sessionStorage.removeItem("token");
+        stopLoading();
     });
 }
 
 async function me(){
+    startLoading();
     let url = basePath+'/api/auth/me';
     await axios.get(url, {headers: {Authorization: 'Bearer ' + sessionStorage.getItem("token")}})
     .then(response => {
@@ -46,22 +51,28 @@ async function me(){
         }else{
             sessionStorage.removeItem("user_id");
         }
+        stopLoading();
     })
     .catch(function (error) {
         console.log(error);
+        stopLoading();
     });
 }
 
 function logout(){
+    startLoading();
     let url = basePath+'/api/auth/logout';
     axios.post(url, {}, {headers: {Authorization: 'Bearer ' + sessionStorage.getItem("token")}})
     .then(response => {
         sessionStorage.removeItem("token");
         sessionStorage.removeItem("current_game");
         checkUserLogin();
+        stopLoading();
+        window.location.href = './index.html';
     })
     .catch(function (error) {
         console.log(error);
+        stopLoading();
     });
 }
 
@@ -79,23 +90,10 @@ function refresh(){
 //** GAME FUNCTIONS **/
 
 function listGames(){
+    startLoading();
     let url = basePath+'/api/resources/game';
     axios.get(url, {headers: {Authorization: 'Bearer ' + sessionStorage.getItem("token")}})
     .then(response => {
-        //{
-        //    "data": [
-        //        {
-        //            "id": 4,
-        //            "rows": 2,
-        //            "columns": 2,
-        //            "mines": 1,
-        //            "start_at": "2021-02-23",
-        //            "end_at": "2021-02-23",
-        //            "status": "WIN"
-        //        }
-        //    ],
-        //    "message": "Games retrieved successfully"
-        //}
         let cardGames = '';
         $('#allActiveGames').html('');
         response.data.data.forEach((e, i) => {
@@ -114,62 +112,43 @@ function listGames(){
         });
 
         $('#allActiveGames').html(cardGames);
+        stopLoading();
     })
     .catch(function (error) {
         console.log(error);
+        stopLoading();
     });
 }
 
 function saveGame(){
+    $('#gameSet').modal('hide');
+    startLoading();
     let url = basePath+'/api/resources/game';
     let data = {
         user_id: sessionStorage.getItem("user_id"),
         rows: $('#gameRows').val(),
         columns: $('#gameColumns').val(),
         mines: $('#gameMines').val(),
-        status: 'NONSTARTED'
+        status: 'OPEN'
     };
 
     axios.post(url, data, {headers: {Authorization: 'Bearer ' + sessionStorage.getItem("token")}})
     .then(response => {
-        $('#gameSet').modal('hide');
         sessionStorage.setItem("current_game", response.data.data.id);
+        stopLoading();
         window.location.href = './play-game.html';
-        //TODO: REDIRECT TO PLAY-GAME PAGE
-        //{
-        //    "data": {
-        //        "id": 5,
-        //        "rows": "2",
-        //        "columns": "2",
-        //        "mines": "1",
-        //        "start_at": "2021-02-23T18:08:04.685680Z",
-        //        "end_at": "2021-02-23T18:08:04.685778Z",
-        //        "status": "NONSTARTED"
-        //    },
-        //    "message": "Game created successfully"
-        //}
     })
     .catch(function (error) {
         console.log(error);
+        stopLoading();
     });
 }
 
-function getGame(gameId){
+async function getGame(gameId){
     let url = basePath+'/api/resources/game/'+gameId;
-    axios.get(url, {headers: {Authorization: 'Bearer ' + sessionStorage.getItem("token")}})
+    await axios.get(url, {headers: {Authorization: 'Bearer ' + sessionStorage.getItem("token")}})
     .then(response => {
-        //{
-        //    "data": {
-        //        "id": 4,
-        //        "rows": 2,
-        //        "columns": 2,
-        //        "mines": 1,
-        //        "start_at": "2021-02-23",
-        //        "end_at": "2021-02-23",
-        //        "status": "WIN"
-        //    },
-        //    "message": "Game retrieved successfully"
-        //}
+        currentGame = response.data.data;
     })
     .catch(function (error) {
         console.log(error);
@@ -177,6 +156,7 @@ function getGame(gameId){
 }
 
 function updateGame(gameId){
+    startLoading();
     let url = basePath+'/api/resources/game/'+gameId;
     let data = {
         user_id: sessionStorage.getItem("user_id"),
@@ -188,185 +168,140 @@ function updateGame(gameId){
 
     axios.put(url, data, {headers: {Authorization: 'Bearer ' + sessionStorage.getItem("token")}})
     .then(response => {
-        //{
-        //    "data": {
-        //        "id": 5,
-        //        "rows": "2",
-        //        "columns": "2",
-        //        "mines": "1",
-        //        "start_at": "2021-02-23T18:08:04.685680Z",
-        //        "end_at": "2021-02-23T18:08:04.685778Z",
-        //        "status": "NONSTARTED"
-        //    },
-        //    "message": "Game updated successfully"
-        //}
+        stopLoading();
     })
     .catch(function (error) {
         console.log(error);
+        stopLoading();
     });
 }
 
 function deleteGame(gameId){
+    startLoading();
     let url = basePath+'/api/resources/game/'+gameId;
     axios.delete(url, {headers: {Authorization: 'Bearer ' + sessionStorage.getItem("token")}})
     .then(response => {
-        //NO RESPONSE
+        stopLoading();
     })
     .catch(function (error) {
         console.log(error);
+        stopLoading();
     });
 }
 
 //** GRID FUNCTIONS **/
 
-function listGrid(gameId){
+async function listGrid(gameId){
     let url = basePath+'/api/resources/grid/'+gameId;
-    axios.get(url, {headers: {Authorization: 'Bearer ' + sessionStorage.getItem("token")}})
+    await axios.get(url, {headers: {Authorization: 'Bearer ' + sessionStorage.getItem("token")}})
     .then(response => {
         grid = response.data.data;
-        //{
-        //    "data": [
-        //        {
-        //            "id": 9,
-        //            "x_cord": 0,
-        //            "y_cord": 0,
-        //            "mine": 1,
-        //            "mines_around": 0,
-        //            "mark": "0"
-        //        },
-        //        ...
-        //    ],
-        //    "message": "Grid retrieved successfully"
-        //}
-        //TODO: SHOW GRID SOMEHOW
     })
     .catch(function (error) {
         console.log(error);
     });
 }
 
-function updateGrid(cellId, mark){
+function updateGrid(cellId, event){
+    startLoading();
     let url = basePath+'/api/resources/grid/'+cellId;
     let cell = grid.filter(e => {return e.id == cellId})[0];
+    let mark = 0;
+
+    if(event.button == 0){
+        mark = 'R';
+    }else if(event.button == 1){
+        mark = 'Q';
+    }else{
+        mark = 'F';
+    }
+
     let data = {
         x_cord: cell.x_cord,
         y_cord: cell.y_cord,
         mine: cell.mine,
         mark: mark,
-        game_id: cell.game_id,
+        game_id: sessionStorage.getItem("current_game"),
     };
 
     axios.put(url, data, {headers: {Authorization: 'Bearer ' + sessionStorage.getItem("token")}})
     .then(response => {
-        //{
-        //    "data": {
-        //        "id": 9,
-        //        "x_cord": "0",
-        //        "y_cord": "0",
-        //        "mine": "1",
-        //        "mines_around": 0,
-        //        "mark": "F"
-        //    },
-        //    "message": "Grid updated successfully"
-        //}
+        updateGameStatus();
+        stopLoading();
     })
     .catch(function (error) {
         console.log(error);
+        stopLoading();
     });
 }
 
 //** SESSION LOG FUNCTIONS **/
 
 function listSessionLogs(){
+    startLoading();
     let url = basePath+'/api/resources/session/log';
     axios.get(url, {headers: {Authorization: 'Bearer ' + sessionStorage.getItem("token")}})
     .then(response => {
-        //{
-        //    "data": [{
-        //        "id": 1,
-        //        "user": "",
-        //        "start": "",
-        //        "end": ""
-        //    }
-        //    ...
-        //    ],
-        //    "message": "SessionLog retrieved successfully"
-        //}
+        stopLoading();
     })
     .catch(function (error) {
         console.log(error);
+        stopLoading();
     });
 }
 
 //** USER FUNCTIONS **/
 
 function listUser(){
+    startLoading();
     let url = basePath+'/api/resources/user';
     axios.get(url, {headers: {Authorization: 'Bearer ' + sessionStorage.getItem("token")}})
     .then(response => {
-        //{
-        //    "data": [
-        //        {
-        //            "id": 1,
-        //            "fullName": "Ezequiel",
-        //            "email": "ezesax@hotmail.com"
-        //        }
-        //        ...
-        //    ],
-        //    "message": "Users retrieved successfully"
-        //}
-        //TODO: DO SOMETHING WITH ALL USER'S GAMES
+        stopLoading();
     })
     .catch(function (error) {
         console.log(error);
+        stopLoading();
     });
 }
 
 function getUser(userId){
+    startLoading();
     let url = basePath+'/api/resources/user/'+userId;
     axios.get(url, {headers: {Authorization: 'Bearer ' + sessionStorage.getItem("token")}})
     .then(response => {
-        //{
-        //    "data": {
-        //        "id": 1,
-        //        "fullName": "Ezequiel",
-        //        "email": "ezesax@hotmail.com"
-        //    },
-        //    "message": "User retrieved successfully"
-        //}
+        stopLoading();
     })
     .catch(function (error) {
         console.log(error);
+        stopLoading();
     });
 }
 
 function updateUser(userId){
+    startLoading();
     let url = basePath+'/api/resources/user/'+userId;
     let data = {fullName: $('#fullName').val(), email: $('#email').val()}
 
     axios.put(url, data, {headers: {Authorization: 'Bearer ' + sessionStorage.getItem("token")}})
     .then(response => {
-        //{
-        //    "data": {
-        //        "id": 1,
-        //        "fullName": "Ezequiel Evaristo",
-        //        "email": "ezesax@nonono.com"
-        //    },
-        //    "message": "User updated successfully"
-        //}
+        stopLoading();
     })
     .catch(function (error) {
         console.log(error);
+        stopLoading();
     });
 }
 
 function deleteUser(userId){
+    startLoading();
     let url = basePath+'/api/resources/game/'+userId;
     axios.delete(url, {headers: {Authorization: 'Bearer ' + sessionStorage.getItem("token")}})
     .then(response => {
-        //NO RESPONSE
+        stopLoading();
     })
     .catch(function (error) {
         console.log(error);
+        stopLoading();
     });
 }

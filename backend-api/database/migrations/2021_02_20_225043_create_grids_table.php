@@ -20,6 +20,7 @@ class CreateGridsTable extends Migration
             $table->boolean('mine');
             $table->integer('mines_around')->nullable();
             $table->char('mark');
+            $table->boolean('hint');
             $table->bigInteger('game_id')->unsigned();
             $table->foreign('game_id')->references('id')->on('games')->onDelete('cascade');
             $table->timestamps();
