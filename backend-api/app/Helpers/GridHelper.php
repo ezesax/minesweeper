@@ -13,6 +13,7 @@ function generateGrid($rows, $columns, $mines, $gameId){
             $grid->mine = $minesMap[$row][$column];
             $grid->mines_around = getMinesAround($minesMap, $row, $column);
             $grid->mark = '0';
+            $grid->hint = '0';
             $grid->game_id = $gameId;
 
             $grid->save();
@@ -119,9 +120,16 @@ function handleAdjacentCells($gameId, $item){
                          ->get();
 
     foreach($adjacentCells as $cell){
-        if($cell->mine == 0){
-            handleAdjacentCells($gameId, $cell);
+        if($cell->mine == 0 && $cell->mines_around == 0){
             $cell->mark = 'R';
+            $cell->hint = 1;
+            $cell->save();
+            handleAdjacentCells($gameId, $cell);
+        }
+
+        if($cell->mine == 0 && $cell->mines_around > 0){
+            $cell->mark = 'R';
+            $cell->hint = 1;
             $cell->save();
         }
     }

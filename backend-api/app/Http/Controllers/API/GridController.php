@@ -47,6 +47,7 @@ class GridController extends Controller
         try{
             $data = $request->validated();
             $item = Grid::findOrFail($id);
+            $item->hint = 1;
             $item->update($data);
 
             handleGame($item);

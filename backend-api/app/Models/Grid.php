@@ -16,6 +16,7 @@ class Grid extends Model
         'mine',
         'mines_around',
         'mark',
+        'hint',
         'game_id'
     ];
 

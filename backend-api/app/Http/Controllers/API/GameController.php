@@ -51,7 +51,6 @@ class GameController extends Controller
         try{
             $data = $request->validated();
             $item = new Game($data);
-
             $item->start_at = now();
 
             $item->save();
