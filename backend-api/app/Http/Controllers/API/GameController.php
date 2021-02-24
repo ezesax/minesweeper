@@ -24,7 +24,9 @@ class GameController extends Controller
             $user = Auth::user();
 
             $games = GameResource::collection(
-                Game::where('user_id', $user->id)->get()
+                Game::where('user_id', $user->id)
+                    ->whereIn('status', ['NONSTARTED', 'OPEN'])
+                    ->get()
             );
 
             return response()->json([
@@ -51,7 +53,6 @@ class GameController extends Controller
             $item = new Game($data);
 
             $item->start_at = now();
-            $item->end_at = now();
 
             $item->save();
 

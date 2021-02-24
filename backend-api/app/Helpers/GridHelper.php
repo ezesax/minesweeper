@@ -62,11 +62,12 @@ function getMinesAround($minesMap, $row, $column){
     return $around;
 }
 
-function handleGame($item, $adjacentCells){
+function handleGame($item){
     $game = Game::find($item->game_id);
     if($item->mark != '0'){
         if(checkWin($game)){
             $game->status = "WIN";
+            $game->end_at = now();
             $game->save();
         }else{
             if($item->mark == 'R'){
@@ -74,9 +75,10 @@ function handleGame($item, $adjacentCells){
                     $game->status = 'CLOSE';
                     $game->save();
                 }else{
-                    handleAdjacentCells($game->id, $adjacentCells);
+                    handleAdjacentCells($game->id, $item);
                     if(checkWin($game)){
                         $game->status = "WIN";
+                        $game->end_at = now();
                         $game->save();
                     }
                 }
@@ -105,6 +107,22 @@ function checkWin($game){
         }
 }
 
-function handleAdjacentCells($gameId, $adjacentCells){
-    Grid::whereIn('id', $adjacentCells)->update(['mark' => 'R']);
+function handleAdjacentCells($gameId, $item){
+    $adjacentCells = Grid::orWhereRaw('game_id = ? AND y_cord = ? AND x_cord = ? AND mark = ?',
+                                    [$gameId, $item->y_cord-1, $item->x_cord, "0"])
+                         ->orWhereRaw('game_id = ? AND y_cord = ? AND x_cord = ? AND mark = ?',
+                                    [$gameId, $item->y_cord+1, $item->x_cord, "0"])
+                         ->orWhereRaw('game_id = ? AND y_cord = ? AND x_cord = ? AND mark = ?',
+                                    [$gameId, $item->y_cord, $item->x_cord-1, "0"])
+                         ->orWhereRaw('game_id = ? AND y_cord = ? AND x_cord = ? AND mark = ?',
+                                    [$gameId, $item->y_cord, $item->x_cord+1, "0"])
+                         ->get();
+
+    foreach($adjacentCells as $cell){
+        if($cell->mine == 0){
+            handleAdjacentCells($gameId, $cell);
+            $cell->mark = 'R';
+            $cell->save();
+        }
+    }
 }
