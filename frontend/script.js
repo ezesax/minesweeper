@@ -86,9 +86,9 @@ function buildGrid(){
                     table += `<td style="background-color:#d4dfeb">&nbsp</td>`;
                 }
             }else if(cell.mark == 'F'){
-                table += `<td style="background-color:#d4dfeb">F</td>`;
+                table += `<td onmousedown="updateGrid(${cell.id}, event)" style="background-color:#d4dfeb">F</td>`;
             }else if(cell.mark == 'Q'){
-                table += `<td style="background-color:#d4dfeb">?</td>`;
+                table += `<td onmousedown="updateGrid(${cell.id}, event)" style="background-color:#d4dfeb">?</td>`;
             }else{
                 table += `<td style="background-color:#636b6f;cursor:pointer" onmousedown="updateGrid(${cell.id}, event)">&nbsp</td>`;
             }
