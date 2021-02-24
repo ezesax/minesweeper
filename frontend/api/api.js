@@ -1,7 +1,7 @@
 'use strict'
 
+var basePath = 'http://localhost:8000';
 var grid = [];
-var adjacentCells = [];
 
 $(document).ready(() => {
 
@@ -10,8 +10,9 @@ $(document).ready(() => {
 //** AUTH FUNCTIONS **/
 
 function register(){
+    let url = basePath+'/api/auth/register';
     let data = {fullName: $('#fullName').val(), email: $('#email').val(), password: $('#password').val()}
-    axios.post('/api/auth/register', data)
+    axios.post(url, data)
     .then(response => {
         //TODO: REDIRECT TO LOGIN
     })
@@ -21,22 +22,30 @@ function register(){
 }
 
 function login(){
+    let url = basePath+'/api/auth/login';
     let data = {email: $('#email').val(), password: $('#password').val()}
-    axios.post('/api/auth/login', data)
+    axios.post(url, data)
     .then(response => {
-        sessionStorage.setItem("token", response.access_token);
-        me();
-        //TODO: REDIRECT TO SOMEWHERE
+        sessionStorage.setItem("token", response.data.access_token);
+        checkUserLogin();
+        $('#loginModal').modal('hide');
     })
     .catch(function (error) {
         console.log(error);
+        sessionStorage.removeItem("user_id");
+        sessionStorage.removeItem("token");
     });
 }
 
-function me(){
-    axios.get('/api/auth/me')
+async function me(){
+    let url = basePath+'/api/auth/me';
+    await axios.get(url, {headers: {Authorization: 'Bearer ' + sessionStorage.getItem("token")}})
     .then(response => {
-        sessionStorage.setItem("user_id", response.id);
+        if(response.data.status == 200){
+            sessionStorage.setItem("user_id", response.data.data.id);
+        }else{
+            sessionStorage.removeItem("user_id");
+        }
     })
     .catch(function (error) {
         console.log(error);
@@ -44,10 +53,12 @@ function me(){
 }
 
 function logout(){
-    axios.post('/api/auth/logout')
+    let url = basePath+'/api/auth/logout';
+    axios.post(url, {}, {headers: {Authorization: 'Bearer ' + sessionStorage.getItem("token")}})
     .then(response => {
         sessionStorage.removeItem("token");
-        //TODO: REDIRECT TO SOMEWHERE
+        sessionStorage.removeItem("current_game");
+        checkUserLogin();
     })
     .catch(function (error) {
         console.log(error);
@@ -55,9 +66,10 @@ function logout(){
 }
 
 function refresh(){
-    axios.post('/api/auth/refresh')
+    let url = basePath+'/api/auth/refresh';
+    axios.post(url, {}, {headers: {Authorization: 'Bearer ' + sessionStorage.getItem("token")}})
     .then(response => {
-        sessionStorage.setItem("token", response.access_token);
+        sessionStorage.setItem("token", response.data.access_token);
     })
     .catch(function (error) {
         console.log(error);
@@ -67,7 +79,8 @@ function refresh(){
 //** GAME FUNCTIONS **/
 
 function listGames(){
-    axios.get('/api/resources/game')
+    let url = basePath+'/api/resources/game';
+    axios.get(url, {headers: {Authorization: 'Bearer ' + sessionStorage.getItem("token")}})
     .then(response => {
         //{
         //    "data": [
@@ -83,7 +96,24 @@ function listGames(){
         //    ],
         //    "message": "Games retrieved successfully"
         //}
-        //TODO: DO SOMETHING WITH ALL USER'S GAMES
+        let cardGames = '';
+        $('#allActiveGames').html('');
+        response.data.data.forEach((e, i) => {
+            cardGames += `
+                <div class="card gameCard" style="width: 18rem;" onclick="playGameById(${e.id})">
+                  <div class="card-body">
+                    <h5 class="card-title">Game ${i+1}</h5>
+                    <p class="card-text">Rows: ${e.rows}</p>
+                    <p class="card-text">Columns: ${e.columns}</p>
+                    <p class="card-text">Mines: ${e.mines}</p>
+                    <br>
+                    <p class="card-text">Started At: ${e.start_at}</p>
+                  </div>
+                </div>
+            `;
+        });
+
+        $('#allActiveGames').html(cardGames);
     })
     .catch(function (error) {
         console.log(error);
@@ -91,6 +121,7 @@ function listGames(){
 }
 
 function saveGame(){
+    let url = basePath+'/api/resources/game';
     let data = {
         user_id: sessionStorage.getItem("user_id"),
         rows: $('#gameRows').val(),
@@ -99,8 +130,12 @@ function saveGame(){
         status: 'NONSTARTED'
     };
 
-    axios.post('/api/resources/game', data)
+    axios.post(url, data, {headers: {Authorization: 'Bearer ' + sessionStorage.getItem("token")}})
     .then(response => {
+        $('#gameSet').modal('hide');
+        sessionStorage.setItem("current_game", response.data.data.id);
+        window.location.href = './play-game.html';
+        //TODO: REDIRECT TO PLAY-GAME PAGE
         //{
         //    "data": {
         //        "id": 5,
@@ -120,8 +155,8 @@ function saveGame(){
 }
 
 function getGame(gameId){
-    let url = '/api/resources/game/'+gameId;
-    axios.get(url)
+    let url = basePath+'/api/resources/game/'+gameId;
+    axios.get(url, {headers: {Authorization: 'Bearer ' + sessionStorage.getItem("token")}})
     .then(response => {
         //{
         //    "data": {
@@ -142,6 +177,7 @@ function getGame(gameId){
 }
 
 function updateGame(gameId){
+    let url = basePath+'/api/resources/game/'+gameId;
     let data = {
         user_id: sessionStorage.getItem("user_id"),
         rows: $('#gameRows').val(),
@@ -150,9 +186,7 @@ function updateGame(gameId){
         status: $('#gameStatus').val()
     };
 
-    let url = '/api/resources/game/'+gameId;
-
-    axios.put(url, data)
+    axios.put(url, data, {headers: {Authorization: 'Bearer ' + sessionStorage.getItem("token")}})
     .then(response => {
         //{
         //    "data": {
@@ -173,8 +207,8 @@ function updateGame(gameId){
 }
 
 function deleteGame(gameId){
-    let url = '/api/resources/game/'+gameId;
-    axios.delete(url)
+    let url = basePath+'/api/resources/game/'+gameId;
+    axios.delete(url, {headers: {Authorization: 'Bearer ' + sessionStorage.getItem("token")}})
     .then(response => {
         //NO RESPONSE
     })
@@ -185,10 +219,11 @@ function deleteGame(gameId){
 
 //** GRID FUNCTIONS **/
 
-function listGrid(){
-    axios.get('/api/resources/grid')
+function listGrid(gameId){
+    let url = basePath+'/api/resources/grid/'+gameId;
+    axios.get(url, {headers: {Authorization: 'Bearer ' + sessionStorage.getItem("token")}})
     .then(response => {
-        grid = response.data;
+        grid = response.data.data;
         //{
         //    "data": [
         //        {
@@ -211,21 +246,17 @@ function listGrid(){
 }
 
 function updateGrid(cellId, mark){
+    let url = basePath+'/api/resources/grid/'+cellId;
     let cell = grid.filter(e => {return e.id == cellId})[0];
     let data = {
         x_cord: cell.x_cord,
         y_cord: cell.y_cord,
         mine: cell.mine,
         mark: mark,
-        game_id: cell.game_id
+        game_id: cell.game_id,
     };
 
-    let url = '/api/resources/grid/'+cellId;
-
-    adjacentCells = [];
-    getAdjacentCells(cellId);
-
-    axios.put(url, data)
+    axios.put(url, data, {headers: {Authorization: 'Bearer ' + sessionStorage.getItem("token")}})
     .then(response => {
         //{
         //    "data": {
@@ -247,7 +278,8 @@ function updateGrid(cellId, mark){
 //** SESSION LOG FUNCTIONS **/
 
 function listSessionLogs(){
-    axios.get('/api/resources/session/log')
+    let url = basePath+'/api/resources/session/log';
+    axios.get(url, {headers: {Authorization: 'Bearer ' + sessionStorage.getItem("token")}})
     .then(response => {
         //{
         //    "data": [{
@@ -269,7 +301,8 @@ function listSessionLogs(){
 //** USER FUNCTIONS **/
 
 function listUser(){
-    axios.get('/api/resources/user')
+    let url = basePath+'/api/resources/user';
+    axios.get(url, {headers: {Authorization: 'Bearer ' + sessionStorage.getItem("token")}})
     .then(response => {
         //{
         //    "data": [
@@ -290,8 +323,8 @@ function listUser(){
 }
 
 function getUser(userId){
-    let url = '/api/resources/user/'+userId;
-    axios.get(url)
+    let url = basePath+'/api/resources/user/'+userId;
+    axios.get(url, {headers: {Authorization: 'Bearer ' + sessionStorage.getItem("token")}})
     .then(response => {
         //{
         //    "data": {
@@ -308,11 +341,10 @@ function getUser(userId){
 }
 
 function updateUser(userId){
+    let url = basePath+'/api/resources/user/'+userId;
     let data = {fullName: $('#fullName').val(), email: $('#email').val()}
 
-    let url = '/api/resources/user/'+userId;
-
-    axios.put(url, data)
+    axios.put(url, data, {headers: {Authorization: 'Bearer ' + sessionStorage.getItem("token")}})
     .then(response => {
         //{
         //    "data": {
@@ -329,36 +361,12 @@ function updateUser(userId){
 }
 
 function deleteUser(userId){
-    let url = '/api/resources/game/'+userId;
-    axios.delete(url)
+    let url = basePath+'/api/resources/game/'+userId;
+    axios.delete(url, {headers: {Authorization: 'Bearer ' + sessionStorage.getItem("token")}})
     .then(response => {
         //NO RESPONSE
     })
     .catch(function (error) {
         console.log(error);
     });
-}
-
-//** ADJACENT CELLS LOGIC **//
-
-function getAdjacentCells(cellId){
-    let cell = grid.filter(e => {return e.id == cellId})[0];
-
-    if(cell.mine == 0){
-        adjacents = grid.filter(e => {
-            if(e.x_cord == cell.x_cord-1 && e.y_cord == cell.y_cord ||
-               e.x_cord == cell.x_cord+1 && e.y_cord == cell.y_cord ||
-               e.x_cord == cell.x_cord && e.y_cord == cell.y_cord-1 ||
-               e.x_cord == cell.x_cord && e.y_cord == cell.y_cord+1){
-                return e;
-            }
-        });
-
-        adjacents.forEach(e => {
-            if(e.mine == 0){
-                getAdjacentCells(e.id);
-                adjacentCells.push(e.id);
-            }
-        });
-    }
 }

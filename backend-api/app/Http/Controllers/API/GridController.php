@@ -49,7 +49,7 @@ class GridController extends Controller
             $item = Grid::findOrFail($id);
             $item->update($data);
 
-            handleGame($item, $request->adjacentCells);
+            handleGame($item);
 
             return response()->json([
                 'data' => new GridResource($item),

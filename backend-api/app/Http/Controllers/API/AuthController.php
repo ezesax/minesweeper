@@ -58,7 +58,7 @@ class AuthController extends Controller
      */
     public function me(): JsonResponse
     {
-        return response()->json(auth('api')->user(), 200);
+        return response()->json(["data" => auth('api')->user(), "status" => "200"], 200);
     }
     /**
      * Log the user out (Invalidate the token).
