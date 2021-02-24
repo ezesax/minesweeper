@@ -1,6 +1,6 @@
 'use strict'
 
-var basePath = 'http://localhost:8000';
+var basePath = 'http://localhost';
 var grid = [];
 var currentGame;
 
