@@ -1,6 +1,6 @@
 'use strict'
 
-var basePath = 'http://localhost';
+var basePath = 'http://localhost/backend-api';
 var grid = [];
 var currentGame;
 
@@ -11,13 +11,16 @@ $(document).ready(() => {
 //** AUTH FUNCTIONS **/
 
 function register(){
+    $('#createUserModal').modal('hide');
+    startLoading();
     let url = basePath+'/api/auth/register';
-    let data = {fullName: $('#fullName').val(), email: $('#email').val(), password: $('#password').val()}
+    let data = {fullName: $('#fullName').val(), email: $('#userEmail').val(), password: $('#userPassword').val()}
     axios.post(url, data)
     .then(response => {
-        //TODO: REDIRECT TO LOGIN
+        stopLoading();
     })
     .catch(function (error) {
+        stopLoading();
         console.log(error);
     });
 }

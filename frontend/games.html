@@ -105,6 +105,37 @@
 
             </div>
         </div>
+        <!--GAME SET MODAL-->
+        <div class="modal" tabindex="-1" role="dialog" id="gameSet">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Game Settings</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="gameRows">Rows: </label>
+                        <input class="form-control" type="number" id="gameRows"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="gameColumns">Columns: </label>
+                        <input class="form-control" type="number" id="gameColumns"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="gameMines">Mines: </label>
+                        <input class="form-control" type="number" id="gameMines"/>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                  <button id="startNewGameBtn" type="button" class="btn btn-primary">Start</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+        </div>
         <script src="./vendor/axios.min.js"></script>
         <script src="./vendor/jquery-3.5.1.min.js"></script>
         <script src="./vendor/bootstrap/js/bootstrap.min.js"></script>
