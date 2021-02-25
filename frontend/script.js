@@ -13,6 +13,10 @@ $(document).ready(() => {
         window.location.href = './index.html';
     });
 
+    $('#createNewUserBtn').on('click', () => {
+        register();
+    });
+
     $(document).bind("contextmenu",function(e){
         return false;
     });
@@ -27,16 +31,20 @@ async function checkUserLogin(){
         let options = '<a id="newGame" onclick="openGameSettings()">New Game</a>';
             options += '<a id="oldGames" onclick="goToOldGames()">Old Games</a>';
             options += '<a id="logout" onclick="logout()">Logout</a>';
-
         $('#menuOptions').html(options);
     }else{
         let options = '<a id="login" onclick="openLogin()">Login</a>';
+            options += '<a id="createUser" onclick="openCreateUser()">Create User</a>';
         $('#menuOptions').html(options);
     }
 }
 
 function openLogin(){
     $('#loginModal').modal('show');
+}
+
+function openCreateUser(){
+    $('#createUserModal').modal('show');
 }
 
 function openGameSettings(){

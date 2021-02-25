@@ -9,10 +9,10 @@ info:
   license:
     name: "Apache 2.0"
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"
-host: "localhost"
+host: "http://localhost/backend-api"
 basePath: "/api"
 tags:
-- name: "auth" 
+- name: "auth"
   description: "Access and user login"
 - name: "game"
   description: "Access to user's games"
@@ -41,7 +41,7 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - in: "body"  
+      - in: "body"
         name: "body"
         description: "Game object that needs to be added"
         required: true
@@ -177,7 +177,7 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - in: "body"  
+      - in: "body"
         name: "body"
         description: "User object that needs to be added"
         required: true
@@ -262,7 +262,7 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - in: "body"  
+      - in: "body"
         name: "body"
         description: "Data object to log user"
         required: true
@@ -285,7 +285,7 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - in: "body"  
+      - in: "body"
         name: "body"
         description: "Data object to log user"
         required: true
